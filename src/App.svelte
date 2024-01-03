@@ -1,47 +1,80 @@
 <script lang="ts">
-  import svelteLogo from './assets/svelte.svg'
-  import viteLogo from '/vite.svg'
-  import Counter from './lib/Counter.svelte'
+  import { data } from "./lib/services/storage";
+  import { tenDayAvg } from "./lib/services/compute";
+  import { format } from "date-fns";
+
+  const today = format(new Date(), "yyyy-MM-dd");
+
+  let value: number | null;
+
+  let initialIndex = getExistingEntryIndexForToday();
+  $: reactiveIndex = $data.findIndex((entry) => entry.date === today);
+
+  if (initialIndex !== null) {
+    value = $data[initialIndex].value;
+  }
+
+  function getExistingEntryIndexForToday(): number | null {
+    const index = $data.findIndex((entry) => entry.date === today);
+    return index === -1 ? null : index;
+  }
+
+  function handleSubmit() {
+    if (typeof value === "undefined") return;
+    const existingEntryIndexForToday = getExistingEntryIndexForToday();
+    if (existingEntryIndexForToday !== null && value !== null) {
+      console.log("rewrite today");
+      $data[existingEntryIndexForToday].value = value;
+    } else if (existingEntryIndexForToday !== null && value === null) {
+      console.log("remove today");
+      $data = $data.filter((_, i) => i !== existingEntryIndexForToday);
+    } else if (value !== null) {
+      console.log("add value");
+      $data = [
+        ...$data,
+        {
+          date: today,
+          value,
+        },
+      ];
+    }
+  }
+
+  $: console.table({ data: $data, tenDayAvg: $tenDayAvg });
+  $: console.log(reactiveIndex);
 </script>
 
 <main>
-  <div>
-    <a href="https://vitejs.dev" target="_blank" rel="noreferrer">
-      <img src={viteLogo} class="logo" alt="Vite Logo" />
-    </a>
-    <a href="https://svelte.dev" target="_blank" rel="noreferrer">
-      <img src={svelteLogo} class="logo svelte" alt="Svelte Logo" />
-    </a>
-  </div>
-  <h1>Vite + Svelte</h1>
+  <h1>10 Day Average: {$tenDayAvg ?? ""}</h1>
 
-  <div class="card">
-    <Counter />
-  </div>
+  <form on:submit|preventDefault={handleSubmit}>
+    <label>
+      <span>Today's weight:</span>
+      <input type="number" bind:value min="0" max="300" /> <span>kg</span>
+    </label>
+    <button type="submit">Save</button>
+  </form>
 
-  <p>
-    Check out <a href="https://github.com/sveltejs/kit#readme" target="_blank" rel="noreferrer">SvelteKit</a>, the official Svelte app framework powered by Vite!
-  </p>
-
-  <p class="read-the-docs">
-    Click on the Vite and Svelte logos to learn more
-  </p>
+  {#if reactiveIndex !== -1}
+    <p>Be sure to come back tomorrow!</p>
+  {/if}
 </main>
 
 <style>
-  .logo {
-    height: 6em;
-    padding: 1.5em;
-    will-change: filter;
-    transition: filter 300ms;
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    font-size: 30px;
   }
-  .logo:hover {
-    filter: drop-shadow(0 0 2em #646cffaa);
+
+  input {
+    font-size: 30px;
+    max-width: 80px;
   }
-  .logo.svelte:hover {
-    filter: drop-shadow(0 0 2em #ff3e00aa);
-  }
-  .read-the-docs {
-    color: #888;
+
+  label {
+    display: flex;
+    gap: 20px;
   }
 </style>
