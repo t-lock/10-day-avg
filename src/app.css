@@ -12,6 +12,16 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+@media (max-width: 650px) {
+  :root {
+    font-size: 80%;
+  }
+}
+@media (max-width: 500px) {
+  :root {
+    font-size: 60%;
+  }
+}
 
 a {
   font-weight: 500;

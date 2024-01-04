@@ -40,17 +40,21 @@
     }
   }
 
-  $: console.table({ data: $data, tenDayAvg: $tenDayAvg });
-  $: console.log(reactiveIndex);
+  $: formattedTenDayAvg = $tenDayAvg ? $tenDayAvg.toFixed(1) + " kg" : null;
 </script>
 
 <main>
-  <h1>10 Day Average: {$tenDayAvg ?? ""}</h1>
+  {#if formattedTenDayAvg}
+    <h1>10 Day Average: {formattedTenDayAvg}</h1>
+  {:else}
+    <h1>10 Day Average</h1>
+  {/if}
 
   <form on:submit|preventDefault={handleSubmit}>
     <label>
       <span>Today's weight:</span>
-      <input type="number" bind:value min="0" max="300" /> <span>kg</span>
+      <input type="number" bind:value min="0" max="300" step="0.1" />
+      <span>kg</span>
     </label>
     <button type="submit">Save</button>
   </form>
@@ -64,17 +68,21 @@
   form {
     display: flex;
     flex-direction: column;
-    gap: 40px;
-    font-size: 30px;
+    gap: 1.8em;
+    font-size: 2em;
   }
 
   input {
-    font-size: 30px;
+    font-size: 1em;
     max-width: 80px;
   }
 
   label {
     display: flex;
     gap: 20px;
+  }
+
+  h1 {
+    margin-bottom: 1em;
   }
 </style>
