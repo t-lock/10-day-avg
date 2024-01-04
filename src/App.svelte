@@ -23,13 +23,10 @@
     if (typeof value === "undefined") return;
     const existingEntryIndexForToday = getExistingEntryIndexForToday();
     if (existingEntryIndexForToday !== null && value !== null) {
-      console.log("rewrite today");
       $data[existingEntryIndexForToday].value = value;
     } else if (existingEntryIndexForToday !== null && value === null) {
-      console.log("remove today");
       $data = $data.filter((_, i) => i !== existingEntryIndexForToday);
     } else if (value !== null) {
-      console.log("add value");
       $data = [
         ...$data,
         {
