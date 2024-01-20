@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { data } from "./lib/services/storage";
-  import { tenDayAvg } from "./lib/services/compute";
   import { format } from "date-fns";
+  import { tenDayAvg } from "./lib/services/compute";
+  import { data } from "./lib/services/storage";
 
   const today = format(new Date(), "yyyy-MM-dd");
 
@@ -59,6 +59,25 @@
   {#if reactiveIndex !== -1}
     <p>Be sure to come back tomorrow!</p>
   {/if}
+
+  {#if $data.length}
+    <table class="values">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Weight</th>
+        </tr>
+      </thead>
+      <tbody>
+        {#each $data as { date, value }}
+          <tr>
+            <td>{format(date, "MM/dd/yyyy")}</td>
+            <td>{value}kg</td>
+          </tr>
+        {/each}
+      </tbody>
+    </table>
+  {/if}
 </main>
 
 <style>
@@ -81,5 +100,33 @@
 
   h1 {
     margin-bottom: 1em;
+  }
+
+  table {
+    text-align: left;
+    margin: 0 auto;
+    width: min-content;
+    margin-top: 30%;
+    border-collapse: collapse;
+  }
+
+  th,
+  td {
+    padding: 12px;
+    border: 1px solid #505050;
+  }
+
+  thead {
+    background-color: #505050;
+  }
+
+  @media (prefers-color-scheme: light) {
+    thead {
+      background-color: #f9f9f9;
+    }
+    th,
+    td {
+      border-color: #f9f9f9;
+    }
   }
 </style>
