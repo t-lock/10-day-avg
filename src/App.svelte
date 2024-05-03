@@ -37,7 +37,7 @@
     }
   }
 
-  $: formattedTenDayAvg = $tenDayAvg ? $tenDayAvg.toFixed(1) + " kg" : null;
+  $: formattedTenDayAvg = $tenDayAvg ? $tenDayAvg.toFixed(2) + " kg" : null;
 </script>
 
 <main>
