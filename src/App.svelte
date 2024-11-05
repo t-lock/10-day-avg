@@ -5,10 +5,12 @@
 
   const today = format(new Date(), "yyyy-MM-dd");
 
-  let value: number | null;
+  let value: number | null = $state(null);
 
   let initialIndex = getExistingEntryIndexForToday();
-  $: reactiveIndex = $data.findIndex((entry) => entry.date === today);
+  let reactiveIndex = $derived(
+    $data.findIndex((entry) => entry.date === today)
+  );
 
   if (initialIndex !== null) {
     value = $data[initialIndex].value;
@@ -19,7 +21,8 @@
     return index === -1 ? null : index;
   }
 
-  function handleSubmit() {
+  function handleSubmit(e: SubmitEvent) {
+    e.preventDefault();
     if (typeof value === "undefined") return;
     const existingEntryIndexForToday = getExistingEntryIndexForToday();
     if (existingEntryIndexForToday !== null && value !== null) {
@@ -37,7 +40,9 @@
     }
   }
 
-  $: formattedTenDayAvg = $tenDayAvg ? $tenDayAvg.toFixed(2) + " kg" : null;
+  let formattedTenDayAvg = $derived(
+    $tenDayAvg ? $tenDayAvg.toFixed(2) + " kg" : null
+  );
 </script>
 
 <main>
@@ -47,7 +52,7 @@
     <h1>10 Day Average</h1>
   {/if}
 
-  <form on:submit|preventDefault={handleSubmit}>
+  <form onsubmit={handleSubmit}>
     <label>
       <span>Today's weight:</span>
       <input type="number" bind:value min="0" max="300" step="0.1" />
